@@ -1,40 +1,5 @@
 # Product Display Code Understanding
 
-## Visual Process Flow
-
-```mermaid
-flowchart TD
-    A[Start] --> B[Initial Product Display]
-    B --> C{Select Type to Remove}
-    C --> D[Remove Selected Type]
-    D --> E[Count Consecutive Products]
-    E --> F[Find Max Block Size]
-    F --> G{More Types?}
-    G -->|Yes| C
-    G -->|No| H[End]
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style H fill:#f9f,stroke:#333,stroke-width:2px
-```
-
-## Example Process Visualization
-
-```mermaid
-graph TD
-    subgraph Initial[Initial Array]
-        I1[2] --- I2[3] --- I3[3] --- I4[7] --- I5[2] --- I6[7] --- I7[2] --- I8[7] --- I9[3] --- I10[3]
-    end
-    
-    subgraph Remove2[After Removing Type 2]
-        R1[3] --- R2[3] --- R3[7] --- R4[7] --- R5[7] --- R6[3] --- R7[3]
-    end
-    
-    Initial --> Remove2
-    
-    style Initial fill:#f0f0f0
-    style Remove2 fill:#e0e0e0
-```
-
 ## Problem Statement Breakdown
 
 ### Context
@@ -92,27 +57,6 @@ This code:
    - cur_size: current block size being counted
 3. Issue: It doesn't check if current ID should be ignored
 
-### Algorithm Flow Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> Initialize
-    Initialize --> ProcessArray: For each element
-    ProcessArray --> CheckIgnore: Check if ID matches ignore_id
-    CheckIgnore --> ProcessArray: If ignored, continue
-    CheckIgnore --> UpdateBlock: If not ignored
-    UpdateBlock --> CheckPrevious: Compare with previous valid ID
-    CheckPrevious --> IncrementSize: If same
-    CheckPrevious --> ResetSize: If different
-    IncrementSize --> UpdateMax
-    ResetSize --> UpdateMax
-    UpdateMax --> ProcessArray: Next element
-    ProcessArray --> [*]: Array complete
-
-    note right of Initialize: Set max_block_size = 0\ncur_size = 0\nprev_valid_id = -1
-    note right of UpdateBlock: Track consecutive\nnon-ignored products
-```
-
 ### Solution Approach
 
 We need to modify the code to:
@@ -163,30 +107,6 @@ Test cases:
 1. Remove type 2: Should return 3 (three 7s)
 2. Remove type 3: Should return 1 
 3. Remove type 7: Should return 2 (two 2s or two 3s)
-
-## Memory Model Visualization
-
-```mermaid
-classDiagram
-    class ProductArray {
-        +int[] ID
-        +int N
-        +int max_block_size
-        +int cur_size
-        +int prev_valid_id
-    }
-    
-    class GetLargestBlock {
-        +int id_ignore
-        +process()
-        +updateMaxBlock()
-    }
-    
-    ProductArray -- GetLargestBlock : uses
-
-    note for ProductArray "Stores the product IDs\nand tracking variables"
-    note for GetLargestBlock "Processes array and\nfinds largest block"
-```
 
 ## Time Complexity
 - O(N) where N is the number of products
