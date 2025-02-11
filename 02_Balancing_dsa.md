@@ -91,41 +91,194 @@ public class Main {
 }
 ```
 
-## Example Walkthrough
+ 
 
-### Example 1:
-Input Box:
+## Example 1: 3×3 Box
+
+### Initial State
 ```
 1 2 3
 4 2 3
 3 2 1
 ```
 
-Process:
-1. Calculate current sums:
-   - Row sums: 6, 9, 6
-   - Column sums: 8, 6, 7
-   - Maximum sum = 9
+### Step-by-Step Solution
 
-2. Required additions:
-   - Row 1: 9-6 = 3 products
-   - Row 2: 9-9 = 0 products
-   - Row 3: 9-6 = 3 products
-   - Total = 6 products
+```mermaid
+flowchart TD
+    A[Step 1: Calculate Row & Column Sums] --> B[Step 2: Find Maximum Sum]
+    B --> C[Step 3: Calculate Required Products]
+    C --> D[Step 4: Verify Solution]
+```
+
+#### Step 1: Calculate Sums
+```java
+Row Sums:
+Row 1: 1 + 2 + 3 = 6
+Row 2: 4 + 2 + 3 = 9
+Row 3: 3 + 2 + 1 = 6
+
+Column Sums:
+Col 1: 1 + 4 + 3 = 8
+Col 2: 2 + 2 + 2 = 6
+Col 3: 3 + 3 + 1 = 7
+```
+
+#### Step 2: Find Maximum
+```
+Maximum sum = max(row sums, column sums)
+            = max(6, 9, 6, 8, 6, 7)
+            = 9
+```
+
+#### Step 3: Calculate Required Products
+```
+Row 1 needs: 9 - 6 = 3 products
+Row 2 needs: 9 - 9 = 0 products
+Row 3 needs: 9 - 6 = 3 products
+
+Total products needed = 6
+```
+
+## Example 2: 4×4 Box
+
+### Initial State
+```
+2 1 3 1
+1 2 1 3
+3 2 1 2
+1 3 2 1
+```
+
+### Step-by-Step Analysis
+
+#### Step 1: Calculate Sums
+```java
+Row Sums:
+Row 1: 2 + 1 + 3 + 1 = 7
+Row 2: 1 + 2 + 1 + 3 = 7
+Row 3: 3 + 2 + 1 + 2 = 8
+Row 4: 1 + 3 + 2 + 1 = 7
+
+Column Sums:
+Col 1: 2 + 1 + 3 + 1 = 7
+Col 2: 1 + 2 + 2 + 3 = 8
+Col 3: 3 + 1 + 1 + 2 = 7
+Col 4: 1 + 3 + 2 + 1 = 7
+```
+
+#### Step 2: Find Maximum
+```
+Maximum sum = max(7, 7, 8, 7, 7, 8, 7, 7)
+            = 8
+```
+
+#### Step 3: Calculate Required Products
+```
+Row 1 needs: 8 - 7 = 1 product
+Row 2 needs: 8 - 7 = 1 product
+Row 3 needs: 8 - 8 = 0 products
+Row 4 needs: 8 - 7 = 1 product
+
+Total products needed = 3
+```
+
+## Implementation in Code
+
+```java
+int solve() {
+    // Step 1: Initialize arrays for sums
+    int[] rowSums = new int[N];
+    int[] colSums = new int[N];
+    int maxSum = 0;
+    
+    // Calculate row and column sums
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < N; j++) {
+            rowSums[i] += Box[i][j];
+            colSums[j] += Box[i][j];
+        }
+        // Update maxSum with row sums
+        maxSum = Math.max(maxSum, rowSums[i]);
+    }
+    
+    // Update maxSum with column sums
+    for(int j = 0; j < N; j++) {
+        maxSum = Math.max(maxSum, colSums[j]);
+    }
+    
+    // Calculate minimum products needed
+    int totalProductsNeeded = 0;
+    for(int i = 0; i < N; i++) {
+        totalProductsNeeded += maxSum - rowSums[i];
+    }
+    
+    return totalProductsNeeded;
+}
+```
+
+## Visualization of the Process
 
 ```mermaid
 stateDiagram-v2
-    [*] --> InitialState
-    InitialState --> CalculateSums
-    CalculateSums --> FindMaxSum
-    FindMaxSum --> CalculateAdditions
-    CalculateAdditions --> [*]
+    [*] --> ReadInput: Read N×N box
+    ReadInput --> CalculateSums: Calculate row/column sums
+    CalculateSums --> FindMax: Find maximum sum
+    FindMax --> Calculate: Calculate needed products
+    Calculate --> [*]: Return total
     
-    note right of InitialState: Original Box
-    note right of CalculateSums: Row/Column Sums
-    note right of FindMaxSum: Target Sum = Max
-    note right of CalculateAdditions: Required Products
+    note right of ReadInput: Input box dimensions and values
+    note right of CalculateSums: Sum each row and column
+    note right of FindMax: Find highest sum
+    note right of Calculate: Sum up differences
 ```
+
+## Edge Cases
+
+### Case 1: Already Balanced Box
+```
+2 2 2
+2 2 2
+2 2 2
+```
+- All sums = 6
+- No products needed to add
+- Result = 0
+
+### Case 2: Single Cell Box (N=1)
+```
+5
+```
+- Already balanced
+- Result = 0
+
+### Case 3: Maximum Imbalance
+```
+1 1 1
+1 9 1
+1 1 1
+```
+- Maximum sum = 11 (middle row)
+- Other rows need 8 products each
+- Result = 16
+
+## Common Pitfalls to Avoid
+
+1. **Forgetting Column Sums**
+   - Must check both row and column sums for maximum
+   - Both need to be equal in final state
+
+2. **Wrong Maximum**
+   - Not considering all rows and columns
+   - Using sum instead of maximum
+
+3. **Overflow**
+   - With large N and values
+   - Use long instead of int if needed
+
+4. **Edge Cases**
+   - Not handling N=1
+   - Not handling already balanced cases
 
 ## Key Points to Remember
 
