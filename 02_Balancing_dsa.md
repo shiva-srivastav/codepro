@@ -314,3 +314,137 @@ stateDiagram-v2
 2. Verify row and column sums
 3. Confirm minimum number of additions
 4. Validate final balanced state is achievable
+
+## Understanding Why Only Row Sums are Sufficient
+
+## Key Insight
+
+When we add products to make all row sums equal to the maximum sum, the column sums will automatically become equal too. Here's why:
+
+```mermaid
+graph TD
+    A[Add Products to Balance Rows] --> B[Row Sums = Maximum]
+    B --> C[Column Sums Auto-balance]
+    C --> D[Matrix Becomes Balanced]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style D fill:#f9f,stroke:#333,stroke-width:2px
+```
+
+## Example Demonstration
+
+Let's take a 3×3 example:
+```
+Initial State:
+1 2 3  (sum = 6)
+4 2 3  (sum = 9)
+3 2 1  (sum = 6)
+
+Column sums: 8 6 7
+```
+
+### Step 1: Find Maximum Sum
+- Maximum among all rows and columns = 9
+
+### Step 2: Add Products to Balance Rows
+```
+1+3 2 3    (sum = 9)
+4   2 3    (sum = 9)
+3+3 2 1    (sum = 9)
+
+Adding:
+Row 1: +3 in first position
+Row 3: +3 in first position
+```
+
+### Why It Works
+
+1. Initial State:
+```
+Row Sums:    Column Sums:
+R1: 6        C1: 8
+R2: 9        C2: 6
+R3: 6        C3: 7
+```
+
+2. After Adding Products:
+```
+Row Sums:    Column Sums:
+R1: 9        C1: 14 (8+6)
+R2: 9        C2: 6
+R3: 9        C3: 7
+```
+
+## Mathematical Proof
+
+1. **Property of Matrix Sums**:
+   - Sum of all row sums = Sum of all column sums
+   - This property must hold before and after adding products
+
+2. **When We Balance Rows**:
+   - All rows become equal to maximum sum (M)
+   - For N×N matrix, total sum = N × M
+
+3. **Column Balance**:
+   - Total sum must be distributed equally among N columns
+   - Each column must have sum = M
+
+```mermaid
+stateDiagram-v2
+    [*] --> EqualRows: Make all rows equal
+    EqualRows --> TotalSum: Total sum becomes N×M
+    TotalSum --> EqualCols: Columns must equal M
+    
+    note right of EqualRows: All rows = M
+    note right of TotalSum: Total = N×M
+    note right of EqualCols: Each col = M
+```
+
+## Why Checking Only Rows is Sufficient
+
+1. **Target Sum Property**:
+   - We find maximum among both rows and columns
+   - This ensures our target sum is sufficient for both
+
+2. **Balance Property**:
+   - When we make all rows equal to maximum
+   - Total sum forces columns to be equal too
+
+3. **Minimality**:
+   - By using maximum as target
+   - We ensure minimum products added
+
+## Visual Representation of Balance
+
+```mermaid
+graph TB
+    subgraph Before
+        A1[Row Sums Different] --> B1[Column Sums Different]
+    end
+    subgraph After
+        A2[Row Sums Equal] --> B2[Column Sums Equal]
+    end
+    Before --> After
+```
+
+## Important Notes
+
+1. We DO need to check column sums when finding the maximum:
+```java
+// Find maximum among both rows and columns
+for(int j = 0; j < N; j++) {
+    maxSum = Math.max(maxSum, colSums[j]);
+}
+```
+
+2. But we only need to add products to balance rows:
+```java
+int totalProductsNeeded = 0;
+for(int i = 0; i < N; i++) {
+    totalProductsNeeded += maxSum - rowSums[i];
+}
+```
+
+3. The columns will automatically balance because:
+   - Total products added = N × maxSum - current_total
+   - This difference must distribute evenly across columns
